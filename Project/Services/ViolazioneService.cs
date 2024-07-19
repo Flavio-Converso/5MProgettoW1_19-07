@@ -1,175 +1,92 @@
 ﻿using Project.Models;
-using System.Data.SqlClient;
+using Project.Services;
 
-
-namespace Project.Services
+public class ViolazioneService : BaseService, IViolazioneService
 {
-    public class ViolazioneService : IViolazioneService
+    private const string CREATE_VIOLAZIONE_COMMAND = "INSERT INTO [dbo].[Violazione] (Descrizione) OUTPUT INSERTED.IDViolazione VALUES (@Descrizione)";
+
+    public ViolazioneService(IConfiguration configuration)
+        : base(configuration.GetConnectionString("DB"))
     {
-        private readonly string _connectionString;
+    }
 
-       
-
-        public ViolazioneService(IConfiguration configuration)
+    public Violazione Create(Violazione violazione)
+    {
+        try
         {
-            _connectionString = configuration.GetConnectionString("DB");
+            violazione.IDViolazione = ExecuteScalar<int>(
+                CREATE_VIOLAZIONE_COMMAND,
+                cmd => cmd.Parameters.AddWithValue("@Descrizione", violazione.Descrizione)
+            );
+            return violazione;
         }
-
-        private const string CREATE_VIOLAZIONE_COMMAND = "INSERT INTO [dbo].[Violazione] (Descrizione) OUTPUT INSERTED.IDViolazione VALUES (@Descrizione)";
-
-        public Violazione Create(Violazione violazione)
+        catch (Exception ex)
         {
-            try
-            {
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    connection.Open();
-                    using (var command = new SqlCommand(CREATE_VIOLAZIONE_COMMAND, connection))
-                    {
-                        command.Parameters.AddWithValue("@Descrizione", violazione.Descrizione);
-
-                        violazione.IDViolazione = (int)command.ExecuteScalar();
-                    }
-                }
-                return violazione;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error creating Violazione: " + ex.Message);
-            }
+            throw new Exception("Error creating Violazione: " + ex.Message);
         }
+    }
 
-
-        private const string GET_ALL_VIOLAZIONI_COMMAND = "SELECT IDViolazione, Descrizione FROM [dbo].[Violazione]";
-        public List<Violazione> GetAllViolazioni()
-        {
-            var violazioni = new List<Violazione>();
-
-            try
+    private const string GET_ALL_VIOLAZIONI_COMMAND = "SELECT IDViolazione, Descrizione FROM [dbo].[Violazione]";
+    public List<Violazione> GetAllViolazioni()
+    {
+        return ExecuteReader(
+            GET_ALL_VIOLAZIONI_COMMAND,
+            reader => new Violazione
             {
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    connection.Open();
-                    using (var command = new SqlCommand(GET_ALL_VIOLAZIONI_COMMAND, connection))
-                    {
-                        using (var reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var violazione = new Violazione
-                                {
-                                    IDViolazione = reader.GetInt32(0),
-                                    Descrizione = reader.GetString(1)
-                                };
-                                violazioni.Add(violazione);
-                            }
-                        }
-                    }
-                }
+                IDViolazione = reader.GetInt32(0),
+                Descrizione = reader.GetString(1)
             }
-            catch (Exception ex)
+        );
+    }
+
+    private const string GET_VIOLAZIONI_OVER_10_PUNTI_COMMAND = @"
+        SELECT 
+            v.Importo, 
+            a.Nome, 
+            a.Cognome, 
+            v.DataViolazione, 
+            v.DecurtamentoPunti
+        FROM [dbo].[Verbale] v
+        JOIN [dbo].[Anagrafica] a ON v.IDAnagrafica = a.IDAnagrafica
+        WHERE v.DecurtamentoPunti > 10
+        ORDER BY v.DecurtamentoPunti DESC;";
+    public List<ViolazioneOver10Punti> GetViolazioneOver10Punti()
+    {
+        return ExecuteReader(
+            GET_VIOLAZIONI_OVER_10_PUNTI_COMMAND,
+            reader => new ViolazioneOver10Punti
             {
-                throw new Exception("Error retrieving violazioni: " + ex.Message);
+                Importo = reader.GetDecimal(0),
+                Nome = reader.GetString(1),
+                Cognome = reader.GetString(2),
+                DataViolazione = reader.GetDateTime(3),
+                DecurtamentoPunti = reader.GetInt32(4)
             }
+        );
+    }
 
-            return violazioni;
-        }
+    private const string GET_VIOLAZIONI_OVER_400_IMPORTO_COMMAND = @"
+        SELECT 
+            a.Nome, 
+            a.Cognome, 
+            v.DataViolazione,                
+            v.Importo
+        FROM [dbo].[Verbale] v
+        JOIN [dbo].[Anagrafica] a ON v.IDAnagrafica = a.IDAnagrafica
+        WHERE v.Importo > 400
+        ORDER BY v.Importo DESC;";
 
-
-        private const string GET_VIOLAZIONI_OVER_10_PUNTI_COMMAND = @"
-            SELECT 
-                v.Importo, 
-                a.Nome, 
-                a.Cognome, 
-                v.DataViolazione, 
-                v.DecurtamentoPunti
-            FROM [dbo].[Verbale] v
-            JOIN [dbo].[Anagrafica] a ON v.IDAnagrafica = a.IDAnagrafica
-            WHERE v.DecurtamentoPunti > 10
-            ORDER BY v.DecurtamentoPunti DESC;";
-        public List<ViolazioneOver10Punti> GetViolazioneOver10Punti()
-        {
-            var result = new List<ViolazioneOver10Punti>();
-
-            try
+    public List<ViolazioneOver400Importo> GetViolazioneOver400Importo()
+    {
+        return ExecuteReader(
+            GET_VIOLAZIONI_OVER_400_IMPORTO_COMMAND,
+            reader => new ViolazioneOver400Importo
             {
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    connection.Open();
-                    using (var command = new SqlCommand(GET_VIOLAZIONI_OVER_10_PUNTI_COMMAND, connection))
-                    {
-                        using (var reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var violazione = new ViolazioneOver10Punti
-                                {
-                                    Importo = reader.GetDecimal(0),
-                                    Nome = reader.GetString(1),
-                                    Cognome = reader.GetString(2),
-                                    DataViolazione = reader.GetDateTime(3),
-                                    DecurtamentoPunti = reader.GetInt32(4)
-                                };
-                                result.Add(violazione);
-                            }
-                        }
-                    }
-                }
+                Nome = reader.GetString(0),
+                Cognome = reader.GetString(1),
+                DataViolazione = reader.GetDateTime(2),
+                Importo = reader.GetDecimal(3)
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Error retrieving violations with over 10 points: " + ex.Message);
-            }
-
-            return result;
-        }
-
-        private const string GET_VIOLAZIONI_OVER_400_IMPORTO_COMMAND = @"
-    SELECT 
-        a.Nome, 
-        a.Cognome, 
-        v.DataViolazione,                
-        v.Importo
-    FROM [dbo].[Verbale] v
-    JOIN [dbo].[Anagrafica] a ON v.IDAnagrafica = a.IDAnagrafica
-    WHERE v.Importo > 400
-    ORDER BY v.Importo DESC;";
-
-        public List<ViolazioneOver400Importo> GetViolazioneOver400Importo()
-        {
-            var result = new List<ViolazioneOver400Importo>();
-
-            try
-            {
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    connection.Open();
-                    using (var command = new SqlCommand(GET_VIOLAZIONI_OVER_400_IMPORTO_COMMAND, connection))
-                    {
-                        using (var reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var violazione = new ViolazioneOver400Importo
-                                {
-                                    Nome = reader.GetString(0),
-                                    Cognome = reader.GetString(1),
-                                    DataViolazione = reader.GetDateTime(2),
-                                    Importo = reader.GetDecimal(3)
-                                };
-                                result.Add(violazione);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error retrieving violations with import over 400 euros: " + ex.Message);
-            }
-
-            return result;
-        }
-
+        );
     }
 }

@@ -1,98 +1,64 @@
 ﻿using Project.Models;
-using System.Data.SqlClient;
+using Project.Services;
 
-
-namespace Project.Services
+public class VerbaleService : BaseService, IVerbaleService
 {
-    public class VerbaleService : IVerbaleService
+    private const string CREATE_VERBALE_COMMAND = "INSERT INTO [dbo].[Verbale] " +
+        "(DataViolazione, IndirizzoViolazione, Nominativo_Agente, DataTrascrizioneVerbale, Importo, DecurtamentoPunti, IDAnagrafica, IDViolazione) " +
+        "OUTPUT INSERTED.IDVerbale " +
+        "VALUES (@DataViolazione, @IndirizzoViolazione, @Nominativo_Agente, @DataTrascrizioneVerbale, @Importo, @DecurtamentoPunti, @IDAnagrafica, @IDViolazione)";
+
+    public VerbaleService(IConfiguration configuration)
+        : base(configuration.GetConnectionString("DB"))
     {
-        private readonly string _connectionString;
+    }
 
-        public VerbaleService(IConfiguration configuration)
+    public Verbale Create(Verbale verbale)
+    {
+        try
         {
-            _connectionString = configuration.GetConnectionString("DB");
-        }
+            verbale.DataTrascrizioneVerbale = DateTime.Now;
 
-
-        private const string CREATE_VERBALE_COMMAND = "INSERT INTO [dbo].[Verbale] " +
-            "(DataViolazione, IndirizzoViolazione, Nominativo_Agente, DataTrascrizioneVerbale, Importo, DecurtamentoPunti, IDAnagrafica, IDViolazione) " +
-            "OUTPUT INSERTED.IDVerbale " +
-            "VALUES (@DataViolazione, @IndirizzoViolazione, @Nominativo_Agente, @DataTrascrizioneVerbale, @Importo, @DecurtamentoPunti, @IDAnagrafica, @IDViolazione)";
-        public Verbale Create(Verbale verbale)
-        {
-            try
-            {              
-                verbale.DataTrascrizioneVerbale = DateTime.Now;
-
-                using (var connection = new SqlConnection(_connectionString))
+            verbale.IDVerbale = ExecuteScalar<int>(
+                CREATE_VERBALE_COMMAND,
+                cmd =>
                 {
-                    connection.Open();
-                    using (var command = new SqlCommand(CREATE_VERBALE_COMMAND, connection))
-                    {
-                        command.Parameters.AddWithValue("@DataViolazione", verbale.DataViolazione);
-                        command.Parameters.AddWithValue("@IndirizzoViolazione", verbale.IndirizzoViolazione);
-                        command.Parameters.AddWithValue("@Nominativo_Agente", verbale.Nominativo_Agente);
-                        command.Parameters.AddWithValue("@DataTrascrizioneVerbale", verbale.DataTrascrizioneVerbale);
-                        command.Parameters.AddWithValue("@Importo", verbale.Importo);
-                        command.Parameters.AddWithValue("@DecurtamentoPunti", verbale.DecurtamentoPunti);
-                        command.Parameters.AddWithValue("@IDAnagrafica", verbale.IDAnagrafica);
-                        command.Parameters.AddWithValue("@IDViolazione", verbale.IDViolazione);
-
-                        verbale.IDVerbale = (int)command.ExecuteScalar();
-                    }
-                    return verbale;
+                    cmd.Parameters.AddWithValue("@DataViolazione", verbale.DataViolazione);
+                    cmd.Parameters.AddWithValue("@IndirizzoViolazione", verbale.IndirizzoViolazione);
+                    cmd.Parameters.AddWithValue("@Nominativo_Agente", verbale.Nominativo_Agente);
+                    cmd.Parameters.AddWithValue("@DataTrascrizioneVerbale", verbale.DataTrascrizioneVerbale);
+                    cmd.Parameters.AddWithValue("@Importo", verbale.Importo);
+                    cmd.Parameters.AddWithValue("@DecurtamentoPunti", verbale.DecurtamentoPunti);
+                    cmd.Parameters.AddWithValue("@IDAnagrafica", verbale.IDAnagrafica);
+                    cmd.Parameters.AddWithValue("@IDViolazione", verbale.IDViolazione);
                 }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error creating Verbale: " + ex.Message);
-            }
+            );
+
+            return verbale;
         }
-
-
-        private const string GET_ALL_VERBALI_BY_TRASGRESSORE_COMMAND = "SELECT a.IDAnagrafica, a.Nome, a.Cognome, COUNT(v.IDVerbale) AS TotaleVerbali " +
-            "FROM [dbo].[Verbale] v " +
-            "JOIN [dbo].[Anagrafica] a ON v.IDAnagrafica = a.IDAnagrafica " +
-            "GROUP BY a.IDAnagrafica, a.Nome, a.Cognome " +
-            "ORDER BY TotaleVerbali DESC;";
-
-        public List<VerbaleByTrasgressore> GetAllVerbaliByTrasgressore()
+        catch (Exception ex)
         {
-            var result = new List<VerbaleByTrasgressore>();
-
-            try
-            {
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    connection.Open();
-                    using (var command = new SqlCommand(GET_ALL_VERBALI_BY_TRASGRESSORE_COMMAND, connection))
-                    {
-                        using (var reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var verbaleByTrasgressore = new VerbaleByTrasgressore
-                                {
-                                    IDAnagrafica = reader.GetInt32(0),
-                                    Nome = reader.GetString(1),
-                                    Cognome = reader.GetString(2),
-                                    TotaleVerbali = reader.GetInt32(3)
-                                };
-                                result.Add(verbaleByTrasgressore);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error retrieving verbali by trasgressore: " + ex.Message);
-            }
-
-            return result;
+            throw new Exception("Error creating Verbale: " + ex.Message);
         }
+    }
 
+    private const string GET_ALL_VERBALI_BY_TRASGRESSORE_COMMAND = "SELECT a.IDAnagrafica, a.Nome, a.Cognome, COUNT(v.IDVerbale) AS TotaleVerbali " +
+        "FROM [dbo].[Verbale] v " +
+        "JOIN [dbo].[Anagrafica] a ON v.IDAnagrafica = a.IDAnagrafica " +
+        "GROUP BY a.IDAnagrafica, a.Nome, a.Cognome " +
+        "ORDER BY TotaleVerbali DESC;";
 
-       
+    public List<VerbaleByTrasgressore> GetAllVerbaliByTrasgressore()
+    {
+        return ExecuteReader(
+            GET_ALL_VERBALI_BY_TRASGRESSORE_COMMAND,
+            reader => new VerbaleByTrasgressore
+            {
+                IDAnagrafica = reader.GetInt32(0),
+                Nome = reader.GetString(1),
+                Cognome = reader.GetString(2),
+                TotaleVerbali = reader.GetInt32(3)
+            }
+        );
     }
 }

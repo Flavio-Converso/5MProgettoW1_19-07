@@ -1,90 +1,59 @@
 ﻿using Project.Models;
-using System.Data.SqlClient;
+using Project.Services;
 
-
-namespace Project.Services
+public class AnagraficaService : BaseService, IAnagraficaService
 {
-    public class AnagraficaService : IAnagraficaService
+    private const string CREATE_ANAGRAFICA_COMMAND = "INSERT INTO [dbo].[Anagrafica] " +
+        "(Nome, Cognome, Indirizzo, Città, CAP, Cod_Fisc) " +
+        "OUTPUT INSERTED.IDAnagrafica " +
+        "VALUES (@Nome, @Cognome, @Indirizzo, @Città, @CAP, @Cod_Fisc)";
+
+    public AnagraficaService(IConfiguration configuration)
+        : base(configuration.GetConnectionString("DB"))
     {
-        private readonly string _connectionString;
+    }
 
-        private const string CREATE_ANAGRAFICA_COMMAND = "INSERT INTO [dbo].[Anagrafica] " +
-            "(Nome, Cognome, Indirizzo, Città, CAP, Cod_Fisc) " +
-            "OUTPUT INSERTED.IDAnagrafica " + 
-            "VALUES (@Nome, @Cognome, @Indirizzo, @Città, @CAP, @Cod_Fisc)";
-
-        public AnagraficaService(IConfiguration configuration)
+    public Anagrafica Create(Anagrafica anagrafica)
+    {
+        try
         {
-            _connectionString = configuration.GetConnectionString("DB");
-        }
-
-        public Anagrafica Create(Anagrafica anagrafica)
-        {
-            try
-            {
-                using (var connection = new SqlConnection(_connectionString))
+            anagrafica.IDAnagrafica = ExecuteScalar<int>(
+                CREATE_ANAGRAFICA_COMMAND,
+                cmd =>
                 {
-                    connection.Open();
-                    using (var command = new SqlCommand(CREATE_ANAGRAFICA_COMMAND, connection))
-                    {
-                        command.Parameters.AddWithValue("@Nome", anagrafica.Nome);
-                        command.Parameters.AddWithValue("@Cognome", anagrafica.Cognome);
-                        command.Parameters.AddWithValue("@Indirizzo", anagrafica.Indirizzo);
-                        command.Parameters.AddWithValue("@Città", anagrafica.Città);
-                        command.Parameters.AddWithValue("@CAP", anagrafica.CAP);
-                        command.Parameters.AddWithValue("@Cod_Fisc", anagrafica.Cod_Fisc);
-
-                        anagrafica.IDAnagrafica = (int)command.ExecuteScalar();
-                    }
-                    return anagrafica;
+                    cmd.Parameters.AddWithValue("@Nome", anagrafica.Nome);
+                    cmd.Parameters.AddWithValue("@Cognome", anagrafica.Cognome);
+                    cmd.Parameters.AddWithValue("@Indirizzo", anagrafica.Indirizzo);
+                    cmd.Parameters.AddWithValue("@Città", anagrafica.Città);
+                    cmd.Parameters.AddWithValue("@CAP", anagrafica.CAP);
+                    cmd.Parameters.AddWithValue("@Cod_Fisc", anagrafica.Cod_Fisc);
                 }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error creating Anagrafica: " + ex.Message);
-            }
+            );
+            return anagrafica;
         }
-
-
-        private const string GET_ALL_VERBALI_BY_PUNTI_DECURTATI_COMMAND = "SELECT a.IDAnagrafica, a.Nome, a.Cognome, SUM(v.DecurtamentoPunti) AS TotalePuntiDecurtati " +
-           "FROM [dbo].[Verbale] v " +
-           "JOIN [dbo].[Anagrafica] a ON v.IDAnagrafica = a.IDAnagrafica " +
-           "GROUP BY a.IDAnagrafica, a.Nome, a.Cognome " +
-           "ORDER BY TotalePuntiDecurtati DESC;";
-        public List<TrasgressoreByPuntiDecurtati> GetAllTrasgressoreByPuntiDecurtati()
+        catch (Exception ex)
         {
-            var result = new List<TrasgressoreByPuntiDecurtati>();
-
-            try
-            {
-                using (var connection = new SqlConnection(_connectionString))
-                {
-                    connection.Open();
-                    using (var command = new SqlCommand(GET_ALL_VERBALI_BY_PUNTI_DECURTATI_COMMAND, connection))
-                    {
-                        using (var reader = command.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var verbaleByPuntiDecurtati = new TrasgressoreByPuntiDecurtati
-                                {
-                                    IDAnagrafica = reader.GetInt32(0),
-                                    Nome = reader.GetString(1),
-                                    Cognome = reader.GetString(2),
-                                    TotalePuntiDecurtati = reader.GetInt32(3)
-                                };
-                                result.Add(verbaleByPuntiDecurtati);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error retrieving verbali by punti decurtati: " + ex.Message);
-            }
-
-            return result;
+            throw new Exception("Error creating Anagrafica: " + ex.Message);
         }
+    }
+
+    private const string GET_ALL_VERBALI_BY_PUNTI_DECURTATI_COMMAND = "SELECT a.IDAnagrafica, a.Nome, a.Cognome, SUM(v.DecurtamentoPunti) AS TotalePuntiDecurtati " +
+       "FROM [dbo].[Verbale] v " +
+       "JOIN [dbo].[Anagrafica] a ON v.IDAnagrafica = a.IDAnagrafica " +
+       "GROUP BY a.IDAnagrafica, a.Nome, a.Cognome " +
+       "ORDER BY TotalePuntiDecurtati DESC;";
+
+    public List<TrasgressoreByPuntiDecurtati> GetAllTrasgressoreByPuntiDecurtati()
+    {
+        return ExecuteReader(
+            GET_ALL_VERBALI_BY_PUNTI_DECURTATI_COMMAND,
+            reader => new TrasgressoreByPuntiDecurtati
+            {
+                IDAnagrafica = reader.GetInt32(0),
+                Nome = reader.GetString(1),
+                Cognome = reader.GetString(2),
+                TotalePuntiDecurtati = reader.GetInt32(3)
+            }
+        );
     }
 }
