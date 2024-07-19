@@ -16,6 +16,7 @@ namespace Project.Models
 
         [Required]
         [StringLength(100, ErrorMessage = "Il nome dell'agente può contenere al massimo 100 caratteri.")]
+        [RegularExpression(@"^[a-zA-Z\s'-]+$", ErrorMessage = "Il nome dell'agente può contenere solo lettere, spazi, apostrofi e trattini.")]
         public string Nominativo_Agente { get; set; }
 
         [Required]

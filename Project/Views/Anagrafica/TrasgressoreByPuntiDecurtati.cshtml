@@ -1,12 +1,12 @@
-﻿@model IEnumerable<Project.Models.VerbaleByTrasgressore>
+﻿@model IEnumerable<Project.Models.TrasgressoreByPuntiDecurtati>
 
 @{
-    ViewData["Title"] = "Verbali per Trasgressore";
+    ViewData["Title"] = "Punti Decurtati per Trasgressore";
 }
 
-<h1>Verbali per Trasgressore</h1>
+<h1>Punti Decurtati per Trasgressore</h1>
 <div>
-    <a asp-action="Index">Back to Home</a>
+    <a asp-controller="Home" asp-action="Index">Back to Home</a>
 </div>
 
 <table class="table">
@@ -15,7 +15,7 @@
             <th>ID Trasgressore</th>
             <th>Nome</th>
             <th>Cognome</th>
-            <th>Totale Verbali</th>
+            <th>Totale Punti Decurtati</th>
         </tr>
     </thead>
     <tbody>
@@ -25,7 +25,7 @@
                 <td>@item.IDAnagrafica</td>
                 <td>@item.Nome</td>
                 <td>@item.Cognome</td>
-                <td>@item.TotaleVerbali</td>
+                <td>@item.TotalePuntiDecurtati</td>
             </tr>
         }
     </tbody>

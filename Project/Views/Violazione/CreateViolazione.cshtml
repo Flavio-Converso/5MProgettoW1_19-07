@@ -6,10 +6,10 @@
 
 <h1>Create Violazione</h1>
 <div>
-    <a asp-action="Index">Back to Home</a>
+    <a asp-controller="Home" asp-action="Index">Back to Home</a>
 </div>
 
-<form asp-action="CreateViolazione" method="post">
+<form asp-controller="Violazione" asp-action="CreateViolazione" method="post">
     <div class="form-group">
         <label asp-for="Descrizione" class="control-label"></label>
         <input asp-for="Descrizione" class="form-control" />
@@ -18,8 +18,5 @@
 
     <div class="form-group">
         <button type="submit" class="btn btn-primary">Create</button>
-       
     </div>
 </form>
-
-
