@@ -76,6 +76,13 @@ namespace Project.Controllers
         }
 
 
+        public IActionResult VerbaliByTrasgressore()
+        {
+            var verbaliByTrasgressore = _verbaleService.GetAllVerbaliByTrasgressore();
+            return View(verbaliByTrasgressore);
+        }
+
+
 
         //
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
