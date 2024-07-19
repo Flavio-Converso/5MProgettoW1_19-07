@@ -72,9 +72,14 @@ namespace Project.Controllers
             return View(violazioni);
         }
 
-        
+        public IActionResult ViolazioniOver10Punti()
+        {
+            var violazioni = _violazioneService.GetViolazioneOver10Punti();
+            return View(violazioni);
+        }
 
-                                   ////VERBALI////
+
+        ////VERBALI////
         public IActionResult CreateVerbale()
         {
             return View();

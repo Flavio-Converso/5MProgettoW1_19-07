@@ -74,5 +74,54 @@ namespace Project.Services
 
             return violazioni;
         }
+
+
+        private const string GET_VIOLAZIONI_OVER_10_PUNTI_COMMAND = @"
+            SELECT 
+                v.Importo, 
+                a.Nome, 
+                a.Cognome, 
+                v.DataViolazione, 
+                v.DecurtamentoPunti
+            FROM [dbo].[Verbale] v
+            JOIN [dbo].[Anagrafica] a ON v.IDAnagrafica = a.IDAnagrafica
+            WHERE v.DecurtamentoPunti > 10
+            ORDER BY v.DecurtamentoPunti DESC;";
+        public List<ViolazioneOver10Punti> GetViolazioneOver10Punti()
+        {
+            var result = new List<ViolazioneOver10Punti>();
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new SqlCommand(GET_VIOLAZIONI_OVER_10_PUNTI_COMMAND, connection))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var violazione = new ViolazioneOver10Punti
+                                {
+                                    Importo = reader.GetDecimal(0),
+                                    Nome = reader.GetString(1),
+                                    Cognome = reader.GetString(2),
+                                    DataViolazione = reader.GetDateTime(3),
+                                    DecurtamentoPunti = reader.GetInt32(4)
+                                };
+                                result.Add(violazione);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error retrieving violations with over 10 points: " + ex.Message);
+            }
+
+            return result;
+        }
     }
 }
