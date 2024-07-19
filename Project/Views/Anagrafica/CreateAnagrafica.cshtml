@@ -6,7 +6,7 @@
 
 <h1>Create Anagrafica</h1>
 <div>
-    <a asp-controller="Home" asp-action="Index">Back to Home</a>
+    <a asp-controller="Home" asp-action="Creazioni" class="btn btn-danger">INDIETRO</a>
 </div>
 
 <form asp-controller="Anagrafica" asp-action="CreateAnagrafica" method="post">
@@ -41,6 +41,6 @@
         <span asp-validation-for="Cod_Fisc" class="text-danger"></span>
     </div>
     <div class="form-group mt-2">
-        <input type="submit" value="CreateAnagrafica" class="btn btn-primary" />
+        <input type="submit" value="Crea" class="btn btn-primary" />
     </div>
 </form>

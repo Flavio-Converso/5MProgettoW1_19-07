@@ -3,55 +3,55 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+    <h1 class="display-4">AZIONI</h1>
    
 </div>
 <div class="container mt-5 mx-5">
     <div class="row mx-5">
         <div class="col-md-4 mx-auto">
-            <a asp-area="" asp-controller="Home" asp-action="Creazioni" class="d-block text-center text-decoration-none">
-                <div class="border rounded p-3 mb-4">
+            <a asp-area="" asp-controller="Home" asp-action="Creazioni" class="d-block text-center text-decoration-none  bg-danger">
+                <div class="border border-dark rounded p-3 mb-4">
                     <img src="images/arrow.png" class="img-fluid w-50 mb-2" alt="add img">
                     <p class="fs-3">Creazioni</p>
                 </div>
             </a>
         </div>
     <div class="row mx-5 mt-5">
-        <div class="col-md">
-            <a asp-area="" asp-controller="Violazione" asp-action="GetAllViolazioni" class="d-block text-center text-decoration-none">
-                <div class="border rounded p-3 mb-4">
+        <div class="col-md ">
+                <a asp-area="" asp-controller="Violazione" asp-action="GetAllViolazioni" class="d-block text-center text-decoration-none  bg-primary h-100 border border-dark">
+                    <div class=" rounded p-3 mb-4">
                     <img src="images/arrow.png" class="img-fluid w-50 mb-2" alt="add img">
                     <p class="fs-3">Tutte le violazioni</p>
                 </div>
             </a>
         </div>
         <div class="col-md">
-            <a asp-area ="" asp-controller="Verbale" asp-action="VerbaliByTrasgressore" class="d-block text-center text-decoration-none">
-                <div class="border rounded p-3 mb-4">
+                <a asp-area="" asp-controller="Verbale" asp-action="VerbaliByTrasgressore" class="d-block text-center text-decoration-none bg-primary h-100 border border-dark">
+                    <div class=" rounded p-3 mb-4">
                     <img src="images/arrow.png" class="img-fluid w-50 mb-2" alt="add img">
                     <p class="fs-3">Verbali per trasgressore</p>
                 </div>
             </a>
         </div>
         <div class="col-md">
-            <a asp-area="" asp-controller="Anagrafica" asp-action="TrasgressoreByPuntiDecurtati" class="d-block text-center text-decoration-none">
-                <div class="border rounded p-3 mb-4">
+                <a asp-area="" asp-controller="Anagrafica" asp-action="TrasgressoreByPuntiDecurtati" class="d-block text-center text-decoration-none bg-primary h-100 border border-dark">
+                    <div class=" rounded p-3 mb-4">
                     <img src="images/arrow.png" class="img-fluid w-50 mb-2" alt="add img">
                     <p class="fs-3">Trasgressori per punti decurtati</p>
                 </div>
             </a>
         </div>
         <div class="col-md">
-            <a asp-area="" asp-controller="Violazione" asp-action="ViolazioniOver10Punti" class="d-block text-center text-decoration-none">
-                <div class="border rounded p-3 mb-4">
+                <a asp-area="" asp-controller="Violazione" asp-action="ViolazioniOver10Punti" class="d-block text-center text-decoration-none bg-primary h-100 border border-dark">
+                    <div class=" rounded p-3 mb-4">
                     <img src="images/arrow.png" class="img-fluid w-50 mb-2" alt="add img">
                     <p class="fs-3">Violazioni over 10 punti decurtati</p>
                 </div>
             </a>
         </div>
         <div class="col-md">
-            <a asp-area="" asp-controller="Violazione" asp-action="ViolazioniOver400Importo" class="d-block text-center text-decoration-none">
-                <div class="border rounded p-3 mb-4">
+                <a asp-area="" asp-controller="Violazione" asp-action="ViolazioniOver400Importo" class="d-block text-center text-decoration-none bg-primary h-100 border border-dark">
+                    <div class=" rounded p-3 mb-4">
                     <img src="images/arrow.png" class="img-fluid w-50 mb-2" alt="add img">
                     <p class="fs-3">Violazioni (importo 400€ o più)</p>
                 </div>

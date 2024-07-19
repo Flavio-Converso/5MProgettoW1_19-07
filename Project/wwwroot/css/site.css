@@ -19,8 +19,35 @@ html {
 
 body {
   margin-bottom: 60px;
+  background-color:darkslategrey
 }
 a{
-    color: inherit;
+    color: white;
     text-decoration: none;
+}
+
+th,td,table{
+    color: white;
+    border: 1px solid white;
+    font-size:25px;
+}
+p,h1,h2,h3,h4,h5,h6, *{
+    color: white;
+}
+tbody>tr:hover{
+        background-color: black;
+}
+th {
+    position: sticky;
+    top: 25px; 
+    background-color: black !important;
+    z-index: 1; 
+    background-color:black
+}
+
+.btn-sticky {
+    position: sticky;
+    top: 0;
+    left:0;
+    z-index: 10; 
 }
