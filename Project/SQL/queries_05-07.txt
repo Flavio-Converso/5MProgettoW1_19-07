@@ -1,0 +1,140 @@
+1. Conteggio dei verbali trascritti, 
+
+SELECT  COUNT(*) VerbaliTot
+FROM Verbale 
+
+//
+2. Conteggio dei verbali trascritti raggruppati per anagrafe, 
+
+SELECT CONCAT(A.Nome, ' ', A.Cognome) AS [Nome Completo],
+COUNT(V.IDVerbale) AS [Numero Verbali] 
+FROM Verbale V 
+INNER JOIN 
+Anagrafica A ON V.IDAnagrafica = A.IDAnagrafica
+GROUP BY 
+CONCAT(A.Nome, ' ', A.Cognome);
+
+//
+3. Conteggio dei verbali trascritti raggruppati per tipo di violazione, 
+
+SELECT Vio.Descrizione AS [Tipo Violazione],
+COUNT(*) AS [Numero Verbali]
+FROM Verbale V
+INNER JOIN 
+Violazione Vio ON V.IDViolazione = Vio.IDViolazione
+GROUP BY 
+Vio.Descrizione;
+
+//
+4. Totale dei punti decurtati per ogni anagrafe, 
+
+SELECT CONCAT(A.Nome, ' ', A.Cognome) AS [Nome Completo], 
+SUM(V.DecurtamentoPunti) AS [Totale Punti Decurtati]
+FROM 
+Verbale V
+INNER JOIN Anagrafica A ON V.IDAnagrafica = A.IDAnagrafica
+GROUP BY 
+CONCAT(A.Nome, ' ', A.Cognome);
+
+//
+5. Cognome, Nome, Data violazione, Indirizzo violazione, importo e punti decurtati per tutti gli anagrafici residenti a Palermo,
+
+SELECT  
+CONCAT(A.Nome, ' ', A.Cognome) AS [Nome Completo],  
+V.DataViolazione AS [Data della violazione], 
+V.IndirizzoViolazione AS [Indirizzo della violazione], 
+V.Importo, 
+V.DecurtamentoPunti AS [Punti decurtati]
+FROM 
+Anagrafica A
+INNER JOIN Verbale V ON V.IDAnagrafica = A.IDAnagrafica
+WHERE A.Città = 'Palermo'
+ORDER BY A.IDAnagrafica ASC;
+
+//
+6. Cognome, Nome, Indirizzo, Data violazione, importo e punti decurtati per le violazioni fatte tra il febbraio 2009 e luglio 2009, 
+
+SELECT 
+CONCAT(A.Nome, ' ', A.Cognome) AS [Nome Completo],  
+V.DataViolazione AS [Data della violazione], 
+V.IndirizzoViolazione AS [Indirizzo della violazione], 
+V.Importo, 
+V.DecurtamentoPunti AS [Punti decurtati]
+FROM Anagrafica A
+INNER JOIN 
+Verbale V ON V.IDAnagrafica = A.IDAnagrafica
+WHERE CONVERT(DATE, V.DataViolazione) BETWEEN '2009-02-01' AND '2009-07-31'
+ORDER BY V.DataViolazione ASC;
+
+//
+7. Totale degli importi per ogni anagrafico, 
+
+SELECT CONCAT(A.Nome, ' ', A.Cognome) AS [Nome Completo],  
+SUM(V.Importo) AS [Totale Importi]
+FROM Anagrafica A
+INNER JOIN 
+Verbale V ON V.IDAnagrafica = A.IDAnagrafica
+GROUP BY 
+CONCAT(A.Nome, ' ', A.Cognome)
+ORDER BY 
+[Nome Completo] ASC;
+
+//
+8. Visualizzazione di tutti gli anagrafici residenti a Palermo, 
+
+SELECT 
+CONCAT(Nome, ' ', Cognome) AS [Abitanti Palermo],
+Indirizzo,
+CAP,
+Cod_Fisc AS [Codice Fiscale]
+FROM Anagrafica
+WHERE Città = 'Palermo'
+ORDER BY Nome ASC;
+
+//
+9. Query che visualizzi Data violazione, Importo e decurta mento punti relativi ad una certa data,
+
+SELECT 
+DataViolazione AS [Data della violazione],
+Importo,
+DecurtamentoPunti AS [Decurtamento punti]
+FROM Verbale
+WHERE CONVERT(DATE, DataViolazione) = '2023-06-15';
+
+//
+10. Conteggio delle violazioni contestate raggruppate per Nominativo dell’agente di Polizia,
+
+SELECT 
+V.Nominativo_Agente AS [Nominativo Agente],  
+COUNT(*) AS [Numero Violazioni Contestate]
+FROM Verbale V
+GROUP BY V.Nominativo_Agente
+ORDER BY [Numero Violazioni Contestate] DESC;
+
+//
+11. Cognome, Nome, Indirizzo, Data violazione, Importo e punti decurtati per tutte le violazioni che superino il decurtamento di 5 punti, 
+
+SELECT 
+CONCAT(A.Nome, ' ', A.Cognome) AS [Nome Completo],  
+V.DataViolazione AS [Data della violazione], 
+V.IndirizzoViolazione AS [Indirizzo della violazione], 
+V.Importo, 
+V.DecurtamentoPunti AS [Punti decurtati]
+FROM Anagrafica A
+INNER JOIN 
+Verbale V ON V.IDAnagrafica = A.IDAnagrafica
+WHERE V.DecurtamentoPunti > 5
+
+//
+12. Cognome, Nome, Indirizzo, Data violazione, Importo e punti decurtati per tutte le violazioni che superino l’importo di 400 euro.  
+
+SELECT 
+CONCAT(A.Nome, ' ', A.Cognome) AS [Nome Completo],  
+V.DataViolazione AS [Data della violazione], 
+V.IndirizzoViolazione AS [Indirizzo della violazione], 
+V.Importo, 
+V.DecurtamentoPunti AS [Punti decurtati]
+FROM Anagrafica A
+INNER JOIN 
+Verbale V ON V.IDAnagrafica = A.IDAnagrafica
+WHERE V.Importo > 400

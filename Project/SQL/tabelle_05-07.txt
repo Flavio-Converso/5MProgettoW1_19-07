@@ -1,0 +1,47 @@
+TABELLA ANAGRAFICA
+
+
+CREATE TABLE [dbo].[Anagrafica] (
+    IDAnagrafica INT IDENTITY(1,1) PRIMARY KEY,
+    Cognome NVARCHAR(50) NOT NULL,
+    Nome NVARCHAR(50) NOT NULL,
+    Indirizzo NVARCHAR(100) NOT NULL,
+    Città NVARCHAR(50) NOT NULL,
+    CAP NVARCHAR(5) NOT NULL,
+    Cod_Fisc NVARCHAR(16) NOT NULL
+);
+
+
+
+
+
+TABELLA VIOLAZIONE
+
+
+CREATE TABLE [dbo].[Violazione]
+(
+	IDViolazione INT IDENTITY(1,1) PRIMARY KEY,
+    Descrizione NVARCHAR(100) NOT NULL
+);
+
+
+
+
+
+TABELLA VERBALE
+
+
+CREATE TABLE [dbo].[Verbale]
+(
+	IDVerbale INT IDENTITY(1,1) PRIMARY KEY,
+    DataViolazione DATE NOT NULL,
+    IndirizzoViolazione NVARCHAR(100) NOT NULL,
+    Nominativo_Agente NVARCHAR(100) NOT NULL,
+    DataTrascrizioneVerbale DATETIME NOT NULL,
+    Importo DECIMAL(10, 2) NOT NULL,
+    DecurtamentoPunti INT NOT NULL,
+	IDAnagrafica INT NOT NULL,
+	CONSTRAINT FK_Verbale_Anagrafica FOREIGN KEY (IDAnagrafica) REFERENCES Anagrafica(IDAnagrafica),
+	IDViolazione INT NOT NULL,
+	CONSTRAINT FK_Verbale_Violazione FOREIGN KEY (IDViolazione) REFERENCES Violazione(IDViolazione)
+);
