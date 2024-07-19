@@ -7,7 +7,8 @@ builder.Services.AddControllersWithViews();
 
 builder.Services
     .AddScoped<IAnagraficaService, AnagraficaService>()
-    .AddScoped<IViolazioneService, ViolazioneService>();
+    .AddScoped<IViolazioneService, ViolazioneService>()
+    .AddScoped<IVerbaleService, VerbaleService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

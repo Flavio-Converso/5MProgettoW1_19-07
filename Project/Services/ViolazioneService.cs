@@ -1,7 +1,6 @@
 ﻿using Project.Models;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
+
 
 namespace Project.Services
 {
