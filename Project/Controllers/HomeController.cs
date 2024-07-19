@@ -18,7 +18,7 @@ namespace Project.Controllers
             _anagraficaService = anagraficaService;
             _violazioneService = violazioneService;
             _verbaleService = verbaleService;
-            _verbaleService = verbaleService;
+            
         }
 
         public IActionResult Index()
@@ -80,6 +80,13 @@ namespace Project.Controllers
         {
             var verbaliByTrasgressore = _verbaleService.GetAllVerbaliByTrasgressore();
             return View(verbaliByTrasgressore);
+        }
+
+
+        public IActionResult TrasgressoreByPuntiDecurtati()
+        {
+            var trasgressoreByPuntiDecurtati = _anagraficaService.GetAllTrasgressoreByPuntiDecurtati();
+            return View(trasgressoreByPuntiDecurtati);
         }
 
 

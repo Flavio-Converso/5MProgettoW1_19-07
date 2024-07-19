@@ -4,7 +4,8 @@ namespace Project.Services
 {
     public interface IVerbaleService
     {
-        Verbale Create(Verbale verbale);
-        List<VerbaleByTrasgressore> GetAllVerbaliByTrasgressore();
+        Verbale Create(Verbale verbale); 
+        List<VerbaleByTrasgressore> GetAllVerbaliByTrasgressore(); 
+        
     }
 }

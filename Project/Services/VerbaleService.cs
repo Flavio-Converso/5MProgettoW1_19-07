@@ -49,6 +49,7 @@ namespace Project.Services
             }
         }
 
+
         private const string GET_ALL_VERBALI_BY_TRASGRESSORE_COMMAND = "SELECT a.IDAnagrafica, a.Nome, a.Cognome, COUNT(v.IDVerbale) AS TotaleVerbali " +
             "FROM [dbo].[Verbale] v " +
             "JOIN [dbo].[Anagrafica] a ON v.IDAnagrafica = a.IDAnagrafica " +
@@ -90,5 +91,8 @@ namespace Project.Services
 
             return result;
         }
+
+
+       
     }
 }
