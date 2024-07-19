@@ -4,6 +4,7 @@ namespace Project.Services
 {
     public interface IViolazioneService
     {
-        List<Violazione> GetAllViolazioni();
+        Violazione Create(Violazione violazione); 
+        List<Violazione> GetAllViolazioni(); 
     }
 }

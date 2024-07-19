@@ -1,0 +1,24 @@
+﻿@model Project.Models.Violazione
+
+@{
+    ViewData["Title"] = "Create Violazione";
+}
+
+<h1>Create Violazione</h1>
+
+<form asp-action="CreateViolazione" method="post">
+    <div class="form-group">
+        <label asp-for="Descrizione" class="control-label"></label>
+        <input asp-for="Descrizione" class="form-control" />
+        <span asp-validation-for="Descrizione" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Create</button>
+       
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

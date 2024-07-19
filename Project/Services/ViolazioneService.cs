@@ -8,13 +8,39 @@ namespace Project.Services
     {
         private readonly string _connectionString;
 
-        private const string GET_ALL_VIOLAZIONI_COMMAND = "SELECT IDViolazione, Descrizione FROM [dbo].[Violazione]";
+       
 
         public ViolazioneService(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("DB");
         }
 
+        private const string CREATE_VIOLAZIONE_COMMAND = "INSERT INTO [dbo].[Violazione] (Descrizione) OUTPUT INSERTED.IDViolazione VALUES (@Descrizione)";
+
+        public Violazione Create(Violazione violazione)
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new SqlCommand(CREATE_VIOLAZIONE_COMMAND, connection))
+                    {
+                        command.Parameters.AddWithValue("@Descrizione", violazione.Descrizione);
+
+                        violazione.IDViolazione = (int)command.ExecuteScalar();
+                    }
+                }
+                return violazione;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error creating Violazione: " + ex.Message);
+            }
+        }
+
+
+        private const string GET_ALL_VIOLAZIONI_COMMAND = "SELECT IDViolazione, Descrizione FROM [dbo].[Violazione]";
         public List<Violazione> GetAllViolazioni()
         {
             var violazioni = new List<Violazione>();

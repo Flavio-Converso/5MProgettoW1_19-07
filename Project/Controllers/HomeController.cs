@@ -50,6 +50,22 @@ namespace Project.Controllers
 
 
                                    ////VIOLAZIONI////
+        public IActionResult CreateViolazione()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult CreateViolazione(Violazione violazione)
+        {
+            if (ModelState.IsValid)
+            {
+                _violazioneService.Create(violazione);
+                return RedirectToAction("Index");
+            }
+            return View(violazione);
+        }
+
         public IActionResult GetAllViolazioni()
         {
             var violazioni = _violazioneService.GetAllViolazioni();
