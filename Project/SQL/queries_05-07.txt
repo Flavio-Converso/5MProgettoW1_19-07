@@ -1,3 +1,4 @@
+//
 1. Conteggio dei verbali trascritti, 
 
 SELECT  COUNT(*) VerbaliTot
