@@ -1,10 +1,12 @@
-﻿namespace Project.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Project.Models
 {
-    public class TrasgressoreByPuntiDecurtati
+    public class TrasgressoreByPuntiDecurtati : Persona
     {
+        [Required(ErrorMessage = "L'ID Anagrafica è obbligatorio.")]
         public int IDAnagrafica { get; set; }
-        public string Nome { get; set; }
-        public string Cognome { get; set; }
+        [Range(0, int.MaxValue, ErrorMessage = "Il totale punti decurtati deve essere un valore non negativo.")]
         public int TotalePuntiDecurtati { get; set; }
     }
 }

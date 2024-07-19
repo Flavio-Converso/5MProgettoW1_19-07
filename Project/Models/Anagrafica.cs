@@ -2,32 +2,25 @@
 
 namespace Project.Models
 {
-    public class Anagrafica
+    public class Anagrafica : Persona
     {
         public int IDAnagrafica { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string Nome { get; set; }
+        [Required(ErrorMessage = "Il Codice Fiscale è obbligatorio.")]
+        [StringLength(16, ErrorMessage = "Il Codice Fiscale può contenere al massimo 16 caratteri.")]
+        public string Cod_Fisc { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string Cognome { get; set; }
-
-        [Required]
-        [StringLength(100)]
+        [Required(ErrorMessage = "L'indirizzo è obbligatorio.")]
+        [StringLength(100, ErrorMessage = "L'indirizzo può contenere al massimo 100 caratteri.")]
         public string Indirizzo { get; set; }
 
-        [Required]
-        [StringLength(50)]
+        [Required(ErrorMessage = "La città è obbligatoria.")]
+        [StringLength(50, ErrorMessage = "La città può contenere al massimo 50 caratteri.")]
         public string Città { get; set; }
 
-        [Required]
-        [StringLength(5)]
+        [Required(ErrorMessage = "Il CAP è obbligatorio.")]
+        [StringLength(5, ErrorMessage = "Il CAP deve essere di 5 caratteri.")]
+        [RegularExpression(@"^\d{5}$", ErrorMessage = "Il CAP deve contenere esattamente 5 numeri.")]
         public string CAP { get; set; }
-
-        [Required]
-        [StringLength(16)]
-        public string Cod_Fisc { get; set; }
     }
 }
