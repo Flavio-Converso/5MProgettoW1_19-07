@@ -123,5 +123,53 @@ namespace Project.Services
 
             return result;
         }
+
+        private const string GET_VIOLAZIONI_OVER_400_IMPORTO_COMMAND = @"
+    SELECT 
+        a.Nome, 
+        a.Cognome, 
+        v.DataViolazione,                
+        v.Importo
+    FROM [dbo].[Verbale] v
+    JOIN [dbo].[Anagrafica] a ON v.IDAnagrafica = a.IDAnagrafica
+    WHERE v.Importo > 400
+    ORDER BY v.Importo DESC;";
+
+        public List<ViolazioneOver400Importo> GetViolazioneOver400Importo()
+        {
+            var result = new List<ViolazioneOver400Importo>();
+
+            try
+            {
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new SqlCommand(GET_VIOLAZIONI_OVER_400_IMPORTO_COMMAND, connection))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var violazione = new ViolazioneOver400Importo
+                                {
+                                    Nome = reader.GetString(0),
+                                    Cognome = reader.GetString(1),
+                                    DataViolazione = reader.GetDateTime(2),
+                                    Importo = reader.GetDecimal(3)
+                                };
+                                result.Add(violazione);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error retrieving violations with import over 400 euros: " + ex.Message);
+            }
+
+            return result;
+        }
+
     }
 }

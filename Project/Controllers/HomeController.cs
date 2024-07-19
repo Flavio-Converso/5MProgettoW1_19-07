@@ -78,6 +78,11 @@ namespace Project.Controllers
             return View(violazioni);
         }
 
+        public IActionResult ViolazioniOver400Importo()
+        {
+            var violazioni = _violazioneService.GetViolazioneOver400Importo();
+            return View(violazioni);
+        }
 
         ////VERBALI////
         public IActionResult CreateVerbale()
